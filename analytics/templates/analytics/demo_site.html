@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>StyleNest — Shop the Latest Trends</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Poppins', sans-serif;
+  background:#FFFFFF;
+  color:#282C3F;
+}
+
+.topbar{
+  background:#282C3F; color:#fff; text-align:center;
+  font-size:12px; padding:6px; letter-spacing:0.03em;
+}
+
+.nav{
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 16px 40px; border-bottom: 1px solid #EAEAEC;
+}
+.logo{ font-size:22px; font-weight:800; color:#FF3F6C; letter-spacing:-0.02em; }
+.nav-links{ display:flex; gap:28px; font-size:13px; font-weight:600; color:#282C3F; letter-spacing:0.02em; }
+.nav-links span{ cursor:default; }
+.nav-links span:hover{ color:#FF3F6C; }
+.nav-right{ font-size:12px; color:#94969F; border:1px solid #EAEAEC; padding:8px 14px; border-radius:20px; }
+.nav-right a{ color:#FF3F6C; font-weight:600; text-decoration:none; }
+
+.banner{
+  background: linear-gradient(120deg, #FFE8EC, #FFF6E9);
+  text-align:center; padding: 50px 20px 46px;
+}
+.banner-tag{ color:#FF3F6C; font-weight:700; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:10px; }
+.banner h1{ font-size:32px; font-weight:800; margin-bottom:10px; }
+.banner p{ color:#696B79; font-size:14px; }
+
+.section-title{
+  font-size:18px; font-weight:700; padding: 36px 40px 18px; display:flex; justify-content:space-between; align-items:center;
+}
+.section-title span.tag{ font-size:11px; color:#94969F; font-weight:500; }
+
+.products{
+  display:grid; grid-template-columns: repeat(4,1fr); gap:20px;
+  padding: 0 40px 20px;
+}
+.product{
+  border:1px solid #EAEAEC; border-radius:4px; overflow:hidden;
+  transition: box-shadow .15s ease;
+}
+.product:hover{ box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+.product-img{
+  width:100%; height:180px; display:flex; align-items:center; justify-content:center;
+  font-size:48px; background:#F7F7F8; position:relative;
+}
+.discount-badge{
+  position:absolute; top:10px; left:10px; background:#FF3F6C; color:#fff;
+  font-size:10px; font-weight:700; padding:3px 8px; border-radius:3px;
+}
+.product-info{ padding:12px 14px 16px; }
+.brand{ font-size:13px; font-weight:700; color:#282C3F; margin-bottom:2px; }
+.desc{ font-size:12px; color:#696B79; margin-bottom:8px; }
+.price-row{ display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.price{ font-size:14px; font-weight:700; }
+.mrp{ font-size:12px; color:#94969F; text-decoration:line-through; }
+.off{ font-size:12px; color:#FF905A; font-weight:600; }
+
+button.buy{
+  width:100%; background:#fff; color:#FF3F6C; border:1px solid #FF3F6C;
+  padding:9px; font-size:12px; font-weight:700; letter-spacing:0.03em;
+  border-radius:3px; cursor:pointer; text-transform:uppercase;
+  transition: all .15s ease; font-family:'Poppins',sans-serif;
+}
+button.buy:hover{ background:#FF3F6C; color:#fff; }
+button.buy.added{ background:#03A685; border-color:#03A685; color:#fff; }
+
+.signup-strip{
+  background:#282C3F; color:#fff; text-align:center; padding:34px 20px; margin-top:20px;
+}
+.signup-strip p{ font-size:13px; color:#B7B9C2; margin-bottom:14px; }
+button.signup{
+  background:#FF3F6C; color:#fff; border:none; padding:11px 26px;
+  font-size:13px; font-weight:700; border-radius:3px; cursor:pointer;
+  letter-spacing:0.03em; text-transform:uppercase; font-family:'Poppins',sans-serif;
+}
+
+.footer-note{
+  text-align:center; padding:16px; font-size:11px; color:#94969F;
+}
+.footer-note a{ color:#FF3F6C; text-decoration:none; font-weight:600; }
+
+.toast{
+  position:fixed; bottom:24px; right:24px;
+  background:#282C3F; color:#fff;
+  padding:12px 18px; border-radius:6px; font-size:12px;
+  opacity:0; transform:translateY(10px); transition:all .25s ease;
+  display:flex; align-items:center; gap:8px;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+.toast .dot{ width:6px; height:6px; border-radius:50%; background:#03A685; }
+</style>
+</head>
+<body>
+
+<div class="topbar">FREE SHIPPING ON ORDERS ABOVE ₹999 · EASY 14 DAY RETURNS</div>
+
+<div class="nav">
+  <div class="logo">StyleNest</div>
+  <div class="nav-links">
+    <span>MEN</span><span>WOMEN</span><span>KIDS</span><span>HOME</span><span>BEAUTY</span>
+  </div>
+  <div class="nav-right">demo store — feeds <a href="/api/dashboard/" target="_blank">live dashboard ↗</a></div>
+</div>
+
+<div class="banner" onclick="track('page_view','/home')">
+  <div class="banner-tag">New season arrivals</div>
+  <h1>Trends that fit your story</h1>
+  <p>Click around below — every action here streams to the analytics dashboard in real time.</p>
+</div>
+
+<div class="section-title">Trending now <span class="tag">3 products</span></div>
+
+<div class="products">
+  <div class="product">
+    <div class="product-img">🎧<span class="discount-badge">40% OFF</span></div>
+    <div class="product-info">
+      <div class="brand">SoundWave</div>
+      <div class="desc">Wireless Over-Ear Headphones</div>
+      <div class="price-row"><span class="price">₹2,499</span><span class="mrp">₹4,199</span><span class="off">(40% OFF)</span></div>
+      <button class="buy" onclick="track('click','/products'); buy(this)">Add to bag</button>
+    </div>
+  </div>
+  <div class="product">
+    <div class="product-img">⌚<span class="discount-badge">25% OFF</span></div>
+    <div class="product-info">
+      <div class="brand">PulseFit</div>
+      <div class="desc">Smart Watch with Heart Rate Monitor</div>
+      <div class="price-row"><span class="price">₹4,999</span><span class="mrp">₹6,699</span><span class="off">(25% OFF)</span></div>
+      <button class="buy" onclick="track('click','/products'); buy(this)">Add to bag</button>
+    </div>
+  </div>
+  <div class="product">
+    <div class="product-img">🎒<span class="discount-badge">30% OFF</span></div>
+    <div class="product-info">
+      <div class="brand">UrbanCarry</div>
+      <div class="desc">Water-Resistant Laptop Backpack</div>
+      <div class="price-row"><span class="price">₹1,299</span><span class="mrp">₹1,899</span><span class="off">(30% OFF)</span></div>
+      <button class="buy" onclick="track('click','/products'); buy(this)">Add to bag</button>
+    </div>
+  </div>
+  <div class="product">
+    <div class="product-img">👟<span class="discount-badge">20% OFF</span></div>
+    <div class="product-info">
+      <div class="brand">StrideOn</div>
+      <div class="desc">Running Shoes — All Terrain</div>
+      <div class="price-row"><span class="price">₹1,999</span><span class="mrp">₹2,499</span><span class="off">(20% OFF)</span></div>
+      <button class="buy" onclick="track('click','/products'); buy(this)">Add to bag</button>
+    </div>
+  </div>
+</div>
+
+<div class="signup-strip">
+  <p>Get 10% off your first order — sign up for offers</p>
+  <button class="signup" onclick="track('signup','/contact')">Sign up now</button>
+</div>
+
+<p class="footer-note">This is a demo storefront for a real-time analytics project. View the <a href="/api/dashboard/" target="_blank">live dashboard</a>.</p>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastText"></span></div>
+
+<script>
+let userId = 'demo_user' + Math.floor(Math.random()*1000);
+
+function track(eventType, page){
+  fetch('/api/track/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ user_id: userId, event_type: eventType, page: page })
+  });
+  showToast(eventType + ' → ' + page + ' sent to dashboard');
+}
+
+function buy(btn){
+  const original = btn.textContent;
+  btn.textContent = 'Added ✓';
+  btn.classList.add('added');
+  setTimeout(()=>{ btn.textContent = original; btn.classList.remove('added'); }, 1200);
+  setTimeout(()=> track('purchase','/checkout'), 500);
+}
+
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=> toast.classList.remove('show'), 2000);
+}
+</script>
+
+</body>
+</html>

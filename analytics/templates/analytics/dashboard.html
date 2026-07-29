@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pulse — Real-Time Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background: #0B1220;
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(56,189,248,0.08), transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(251,146,60,0.06), transparent 40%);
+  color: #E7EDF5;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  padding: 32px;
+}
+.topbar{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+.brand-eyebrow{ font-family:'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: #38BDF8; text-transform: uppercase; margin-bottom: 6px; }
+.brand-title{ font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
+.live-pill{ display:flex; align-items:center; gap:8px; background: #131C2E; border:1px solid #223047; padding: 8px 14px; border-radius: 100px; font-family:'JetBrains Mono', monospace; font-size: 12px; color: #8B9AB3; }
+.dot{ width:8px; height:8px; border-radius:50%; background: #34D399; animation: pulse 1.8s infinite; }
+.dot.off{ background: #FB7185; animation: none; }
+@keyframes pulse{ 0%{ box-shadow: 0 0 0 0 rgba(52,211,153,0.5);} 70%{ box-shadow: 0 0 0 8px rgba(52,211,153,0);} 100%{ box-shadow: 0 0 0 0 rgba(52,211,153,0);} }
+
+.tabs{ display:flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid #223047; }
+.tab{ font-family:'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.03em; color: #8B9AB3; background:none; border:none; padding: 10px 18px; cursor:pointer; border-bottom: 2px solid transparent; }
+.tab.active{ color: #38BDF8; border-bottom-color: #38BDF8; }
+.tab:hover{ color: #E7EDF5; }
+.tab-content{ display:none; }
+.tab-content.active{ display:block; }
+
+.grid-stats{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.card{ background: #131C2E; border:1px solid #223047; border-radius: 10px; padding: 18px 20px; }
+.card-label{ font-family:'JetBrains Mono', monospace; font-size: 11px; color: #8B9AB3; text-transform:uppercase; letter-spacing:0.08em; margin-bottom: 10px; }
+.card-value{ font-family:'JetBrains Mono', monospace; font-size: 32px; font-weight: 700; }
+.sky{color:#38BDF8;} .amber{color:#FB923C;} .emerald{color:#34D399;} .violet{color:#A78BFA;}
+
+.main-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; }
+.panel-title{ font-size: 14px; font-weight: 700; margin-bottom: 14px; display:flex; align-items:center; justify-content:space-between; }
+.panel-title span.sub{ font-family:'JetBrains Mono', monospace; font-size: 10px; color: #8B9AB3; font-weight:400; }
+
+.feed{ max-height: 340px; overflow-y:auto; font-family:'JetBrains Mono', monospace; font-size: 12px; }
+.feed-row{ display:grid; grid-template-columns: 70px 90px 1fr 60px; gap: 10px; padding: 8px 0; border-bottom: 1px solid #223047; color: #8B9AB3; align-items:center; }
+.badge{ padding: 2px 8px; border-radius: 4px; font-size: 10px; text-align:center; text-transform: uppercase; }
+.badge.click{ background: rgba(56,189,248,0.15); color: #38BDF8; }
+.badge.purchase{ background: rgba(52,211,153,0.15); color: #34D399; }
+.badge.signup{ background: rgba(167,139,250,0.15); color: #A78BFA; }
+.badge.page_view{ background: rgba(251,146,60,0.15); color: #FB923C; }
+
+table{ width:100%; border-collapse: collapse; font-family:'JetBrains Mono', monospace; font-size:12px;}
+th{ text-align:left; color: #8B9AB3; font-weight:500; padding: 8px 6px; border-bottom:1px solid #223047; text-transform:uppercase; font-size:10px; }
+td{ padding: 8px 6px; border-bottom: 1px solid #223047; color: #E7EDF5; }
+
+.about-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:16px; margin-top: 16px;}
+.stack-item b{ color: #E7EDF5; display:block; font-size:14px; margin-bottom:4px; }
+.stack-item{ font-family:'JetBrains Mono', monospace; font-size: 12px; color: #8B9AB3; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="brand-eyebrow">// analytics engine</div>
+    <div class="brand-title">Pulse — Real-Time Analytics Dashboard</div>
+  </div>
+  <div class="live-pill"><span class="dot" id="statusDot"></span> <span id="statusText">connecting...</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab(0)">01 Live Dashboard</button>
+  <button class="tab" onclick="showTab(1)">02 Historical Data</button>
+  <button class="tab" onclick="showTab(2)">03 About / Stack</button>
+</div>
+
+<!-- TAB 1: LIVE DASHBOARD -->
+<div class="tab-content active" id="tab-0">
+  <div class="grid-stats">
+    <div class="card"><div class="card-label">Total Events</div><div class="card-value sky" id="statTotal">0</div></div>
+    <div class="card"><div class="card-label">Unique Users</div><div class="card-value amber" id="statUsers">0</div></div>
+    <div class="card"><div class="card-label">Purchases</div><div class="card-value emerald" id="statPurchases">0</div></div>
+    <div class="card"><div class="card-label">Top Page</div><div class="card-value violet" id="statTopPage" style="font-size:20px;">—</div></div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card">
+      <div class="panel-title">Live Event Feed <span class="sub">auto-updating via websocket</span></div>
+      <div class="feed" id="feed"></div>
+    </div>
+    <div class="card">
+      <div class="panel-title">Event Type Breakdown</div>
+      <canvas id="chart" height="220"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: HISTORICAL DATA -->
+<div class="tab-content" id="tab-1">
+  <div class="card">
+    <div class="panel-title">All Events <span class="sub" id="historicalCount"></span></div>
+    <table>
+      <thead><tr><th>Time</th><th>User</th><th>Event Type</th><th>Page</th></tr></thead>
+      <tbody id="historicalTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 3: ABOUT / STACK -->
+<div class="tab-content" id="tab-2">
+  <div class="card">
+    <div class="panel-title">Tech Stack</div>
+    <div class="about-grid">
+      <div class="stack-item"><b>Backend</b>Django + Django REST Framework — handles data models, API endpoints, and business logic.</div>
+      <div class="stack-item"><b>Database</b>PostgreSQL — stores all event records permanently with relational integrity.</div>
+      <div class="stack-item"><b>Real-Time Layer</b>Django Channels + Redis — pushes live updates to connected clients via WebSocket (Pub/Sub pattern).</div>
+      <div class="stack-item"><b>Data Analysis</b>Pandas — aggregates raw events into summary statistics (counts, breakdowns).</div>
+      <div class="stack-item"><b>Frontend</b>HTML/CSS/JS + Chart.js — renders live, auto-updating visualizations without page reloads.</div>
+      <div class="stack-item"><b>Protocol</b>WebSocket — maintains a persistent connection so the server can push data instantly, instead of the client repeatedly polling.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(i){
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active', idx===i));
+  document.querySelectorAll('.tab-content').forEach((t,idx)=>t.classList.toggle('active', idx===i));
+  if(i === 1) loadHistorical();
+}
+
+let eventTypeCounts = {click:0, purchase:0, signup:0, page_view:0};
+let chart;
+
+function initChart(){
+  chart = new Chart(document.getElementById('chart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Click','Purchase','Signup','Page View'],
+      datasets: [{
+        data: [0,0,0,0],
+        backgroundColor: ['#38BDF8','#34D399','#A78BFA','#FB923C'],
+        borderColor: '#131C2E',
+        borderWidth: 3,
+      }]
+    },
+    options: { plugins:{ legend:{ labels:{ color:'#8B9AB3', font:{family:'Inter', size: 11} } } } }
+  });
+}
+
+function addFeedRow(evt){
+  const feed = document.getElementById('feed');
+  const row = document.createElement('div');
+  row.className = 'feed-row';
+  const time = evt.timestamp.split(' ')[1] || evt.timestamp;
+  row.innerHTML = `<span>${time}</span><span class="badge ${evt.event_type}">${evt.event_type}</span><span>${evt.page}</span><span>${evt.user_id}</span>`;
+  feed.prepend(row);
+  while(feed.children.length > 30) feed.removeChild(feed.lastChild);
+}
+
+function updateChart(){
+  chart.data.datasets[0].data = [
+    eventTypeCounts.click || 0,
+    eventTypeCounts.purchase || 0,
+    eventTypeCounts.signup || 0,
+    eventTypeCounts.page_view || 0
+  ];
+  chart.update();
+}
+
+async function loadSummary(){
+  const res = await fetch('/api/summary/');
+  const data = await res.json();
+  if(data.message) return;
+  document.getElementById('statTotal').textContent = data.total_events;
+  document.getElementById('statUsers').textContent = data.unique_users;
+  document.getElementById('statPurchases').textContent = data.event_type_breakdown.purchase || 0;
+  const pages = Object.entries(data.top_pages);
+  if(pages.length){
+    pages.sort((a,b)=>b[1]-a[1]);
+    document.getElementById('statTopPage').textContent = pages[0][0];
+  }
+  eventTypeCounts = data.event_type_breakdown;
+  updateChart();
+}
+
+async function loadHistorical(){
+  const res = await fetch('/api/events/');
+  const data = await res.json();
+  const tbody = document.getElementById('historicalTable');
+  tbody.innerHTML = '';
+  data.events.forEach(evt=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${evt.timestamp}</td><td>${evt.user_id}</td><td><span class="badge ${evt.event_type}">${evt.event_type}</span></td><td>${evt.page}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('historicalCount').textContent = data.events.length + ' records';
+}
+
+function connectWebSocket(){
+  const socket = new WebSocket('ws://' + window.location.host + '/ws/dashboard/');
+
+  socket.onopen = function(){
+    document.getElementById('statusDot').classList.remove('off');
+    document.getElementById('statusText').textContent = 'LIVE · connected';
+  };
+
+  socket.onmessage = function(event){
+    const data = JSON.parse(event.data);
+    addFeedRow(data);
+    eventTypeCounts[data.event_type] = (eventTypeCounts[data.event_type] || 0) + 1;
+    updateChart();
+    loadSummary();
+    if(document.getElementById('tab-1').classList.contains('active')) loadHistorical();
+  };
+
+  socket.onclose = function(){
+    document.getElementById('statusDot').classList.add('off');
+    document.getElementById('statusText').textContent = 'disconnected';
+  };
+}
+
+initChart();
+loadSummary();
+loadHistorical();
+connectWebSocket();
+</script>
+
+</body>
+</html>
