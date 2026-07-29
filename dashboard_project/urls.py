@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from analytics import views
 
 urlpatterns = [
+    path('', views.dashboard_page, name='home'),   # 👈 Root URL
     path('admin/', admin.site.urls),
     path('api/', include('analytics.urls')),
 ]
