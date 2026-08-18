@@ -83,3 +83,5 @@ def track_event(request):
         return JsonResponse({'status': 'success'})
 
     return JsonResponse({'status': 'error'}, status=400)
+def demo_site(request):
+    return render(request, 'analytics/demo_site.html')
