@@ -199,7 +199,8 @@ async function loadHistorical(){
 }
 
 function connectWebSocket(){
-  const socket = new WebSocket('ws://' + window.location.host + '/ws/dashboard/');
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const socket = new WebSocket(wsProtocol + '//' + window.location.host + '/ws/dashboard/');');
 
   socket.onopen = function(){
     document.getElementById('statusDot').classList.remove('off');
