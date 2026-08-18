@@ -143,9 +143,9 @@ ASGI_APPLICATION = 'dashboard_project.asgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-        'CONFIG': {
-            "hosts": [REDIS_URL],
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get("REDIS_URL")],
         },
     },
 }
