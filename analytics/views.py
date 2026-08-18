@@ -5,6 +5,8 @@ from django.utils import timezone
 from .models import Event
 import pandas as pd
 import json
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 def event_list(request):
@@ -52,13 +54,32 @@ def dashboard_page(request):
 def track_event(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        Event.objects.create(
+
+        event = Event.objects.create(
             user_id=data.get('user_id', 'demo_user'),
             event_type=data.get('event_type'),
             page=data.get('page'),
         )
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error'}, status=400)
 
-def demo_site(request):
-    return render(request, 'analytics/demo_site.html')
+        event_data = {
+            'user_id': event.user_id,
+            'event_type': event.event_type,
+            'page': event.page,
+            'timestamp': timezone.localtime(
+                event.timestamp
+            ).strftime('%Y-%m-%d %H:%M:%S'),
+        }
+
+        channel_layer = get_channel_layer()
+
+        async_to_sync(channel_layer.group_send)(
+            'dashboard_updates',
+            {
+                'type': 'send_update',
+                'data': event_data,
+            }
+        )
+
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'}, status=400)
