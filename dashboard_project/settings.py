@@ -135,6 +135,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')
 
 STATIC_URL = 'static/'
 
@@ -143,6 +144,9 @@ ASGI_APPLICATION = 'dashboard_project.asgi.application'
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
+        'CONFIG': {
+            "hosts": [REDIS_URL],
+        },
     },
 }
 STATIC_ROOT = BASE_DIR / "staticfiles"
